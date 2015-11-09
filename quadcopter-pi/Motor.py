@@ -1,21 +1,22 @@
 __author__ = 'janco'
 
 class Motor():
-    max = 1700
-    min = 1000
+    #max = 1870
+    max = 600
+    min = 220
     def __init__(self, pwmboard, pin):
         self.pwmboard = pwmboard
         self.pin = pin
+        self.pwm = 200
         self.pwmboard.setPWM(self.pin,0,200)
 
-    def setPercentage(self, p):
-        if(p<1):
-            self.p = 1
-        elif(p>100):
-            self.p = 100
-        else:
-            self.p = p
-        self.pwmboard.setPWM(self.pin,0,(int)(((self.p/100)*(self.max-self.min))+self.min))
+    def update(self, pwm):
+        if(pwm > self.max):
+            pwm = self.max
+        elif(pwm < self.min):
+            pwm = self.min
+        self.pwm = int(pwm)
+        self.pwmboard.setPWM(self.pin, 0, self.pwm)
 
-    def getPercentage(self):
-        return self.p
+    def getpwm(self):
+        return self.pwm
