@@ -23,12 +23,13 @@ class MPU6050(threading.Thread):
         self.gyro_offset_y = gyro_scaled_y
         self.gyro_total_x = self.last_x - self.gyro_offset_x
         self.gyro_total_y = self.last_y - self.gyro_offset_y
+
+        self.running = True
         threading.Thread.__init__(self)
 
     def run(self):
         time_diff = 0.01
-        self.running = True
-        while(self.running):
+        while self.running:
             time.sleep(time_diff - 0.005)
             (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.__read_all()
 
@@ -80,6 +81,9 @@ class MPU6050(threading.Thread):
 
     def getlastvalues(self):
         return self.last_x, self.last_y
+
+    def getextendedvalues(self):
+        return int(self.gyro_scaled_x), int(self.gyro_scaled_y), int(self.accel_scaled_x*10), int(self.accel_scaled_y*10), int(self.last_x), int(self.last_y)
 
     def stop(self):
         self.running = False

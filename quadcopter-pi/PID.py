@@ -7,6 +7,10 @@ class PID:
         self.d_gain = d_gain
         self.i_error = 0.0
 
+    def changegain(self, pgain, igain, dgain):
+        self.p_gain = float(pgain)
+        self.i_gain = float(igain)
+        self.d_gain = float(dgain)
 
     def Compute(self, input, target, dt):
         #-------------------------------------------------------------------------------------------

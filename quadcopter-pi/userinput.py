@@ -1,26 +1,21 @@
-import math
 import threading
-import time
 __author__ = 'janco'
 
 
 class UserInput(threading.Thread):
-
-
     def __init__(self, quadcopter):
-        """Init class """
         self.running = True
         self.q = quadcopter
         threading.Thread.__init__(self)
 
     def run(self):
-        while(self.running):
+        while self.running:
             try:
-                input = raw_input('Input:')
-                if(input == "exit"):
+                uinput = raw_input('Input:')
+                if uinput == "exit":
                     self.q.stop()
                 else:
-                    self.q.setWantedX(int(input))
+                    self.q.setyaw(int(uinput))
             except ValueError:
                 print "geen nummer"
 

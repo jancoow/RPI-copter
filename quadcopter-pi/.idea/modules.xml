@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../quadcopter-gui/.idea/Quadcopter-GUI.iml" filepath="$PROJECT_DIR$/../quadcopter-gui/.idea/Quadcopter-GUI.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/quadcopter.iml" filepath="$PROJECT_DIR$/.idea/quadcopter.iml" />
     </modules>
   </component>
