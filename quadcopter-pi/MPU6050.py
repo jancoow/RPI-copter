@@ -19,10 +19,15 @@ class MPU6050(threading.Thread):
         (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.__read_all()
         self.last_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
         self.last_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        self.last_z = 0
+
         self.gyro_offset_x = gyro_scaled_x
         self.gyro_offset_y = gyro_scaled_y
+        self.gyro_offset_z = gyro_scaled_z
+
         self.gyro_total_x = self.last_x - self.gyro_offset_x
         self.gyro_total_y = self.last_y - self.gyro_offset_y
+        self.gyro_total_z = self.last_z - self.gyro_offset_z
 
         self.running = True
         threading.Thread.__init__(self)
@@ -35,12 +40,15 @@ class MPU6050(threading.Thread):
 
             gyro_scaled_x -= self.gyro_offset_x
             gyro_scaled_y -= self.gyro_offset_y
+            gyro_scaled_z -= self.gyro_offset_z
 
             gyro_x_delta = (gyro_scaled_x * time_diff)
             gyro_y_delta = (gyro_scaled_y * time_diff)
+            gyro_z_delta = (gyro_scaled_z * time_diff)
 
             self.gyro_total_x += gyro_x_delta
             self.gyro_total_y += gyro_y_delta
+            self.gyro_total_z += gyro_z_delta
 
             rotation_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
             rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
@@ -80,10 +88,10 @@ class MPU6050(threading.Thread):
         return math.degrees(radians)
 
     def getlastvalues(self):
-        return self.last_x, self.last_y
+        return self.last_x, self.last_y, self.gyro_total_z
 
     def getextendedvalues(self):
-        return int(self.gyro_scaled_x), int(self.gyro_scaled_y), int(self.accel_scaled_x*10), int(self.accel_scaled_y*10), int(self.last_x), int(self.last_y)
+        return int(self.gyro_scaled_x), int(self.gyro_scaled_y), int(self.accel_scaled_x*10), int(self.accel_scaled_y*10), int(self.last_x), int(self.last_y), int(self.gyro_total_z)
 
     def stop(self):
         self.running = False

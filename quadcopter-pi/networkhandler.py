@@ -35,7 +35,8 @@ class NetworkReceive(threading.Thread):
                 if(n == 0):           #normal control
                     if(len(data) == 4):
                         self.quadcopter.setthrottle(int(data[1]))
-                        self.quadcopter.setyaw(int(data[2]))
+                        self.quadcopter.setroll(int(data[2]))
+                        self.quadcopter.setpitch(int(data[3]))
                 if(n == 1):          #PID gain settings
                     if(len(data) == 4):
                         self.quadcopter.changepidgain(float(data[1]), float(data[2]), float(data[3]))

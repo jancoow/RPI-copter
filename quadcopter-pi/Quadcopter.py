@@ -32,12 +32,13 @@ class Quadcopter():
 
         self.pgain = 3.0
         self.igain = 0.0
-        self.dgain = 0.9
+        self.dgain = 1.2
 
-        self.yaw_pid = PID(self.pgain,  self.igain,   self.dgain)
+        self.roll_pid = PID(self.pgain, self.igain, self.dgain)
+        self.pitch_pid = PID(self.pgain, self.igain, self.dgain)
+        self.yaw_pid = PID(self.pgain, self.igain, self.dgain)
 
-
-        self.wantedyaw = 0.0
+        self.wantedroll = 0.0
         self.wantedpitch = 0.0
         self.throttle = 0.0;
 
@@ -45,36 +46,34 @@ class Quadcopter():
 
     def start(self):
         lasttime = time.time()
-
-        countertime = time.time()
-        counter = 0
         while self.running:
-            x, y = self.mpu6050.getlastvalues()
+            x, y, z = self.mpu6050.getlastvalues()
             delta_time = time.time() - lasttime
             lasttime = time.time()
 
-            yaw_pid_result = self.yaw_pid.Compute(x, self.wantedyaw, delta_time)
+            roll_pid_result = self.roll_pid.Compute(x, self.wantedroll, delta_time)
+            pitch_pid_result = self.pitch_pid.Compute(y, self.wantedpitch, delta_time)
+            #yaw_pid_result = self.yaw_pid.Compute(z, 0, delta_time)
+            yaw_pid_result = 0
+
             if self.throttle != 0:
-                self.motor1.update((self.throttle + yaw_pid_result))
-                self.motor2.update((self.throttle + yaw_pid_result))
-                self.motor3.update((self.throttle - yaw_pid_result))
-                self.motor4.update((self.throttle - yaw_pid_result))
-            counter += 1
-            if(time.time() - countertime > 1):
-                print(counter)
-                countertime = time.time()
-                counter = 0
+                self.motor1.update((self.throttle + roll_pid_result + pitch_pid_result + yaw_pid_result))
+                self.motor2.update((self.throttle + roll_pid_result - pitch_pid_result - yaw_pid_result))
+                self.motor3.update((self.throttle - roll_pid_result - pitch_pid_result + yaw_pid_result))
+                self.motor4.update((self.throttle - roll_pid_result + pitch_pid_result - yaw_pid_result))
 
     def changepidgain(self, pgain, igain, dgain):
-        self.yaw_pid.changegain(pgain, igain, dgain)
+        self.roll_pid.changegain(pgain, igain, dgain)
+        self.pitch_pid.changegain(pgain, igain, dgain)
 
-    def setyaw(self, yaw):
-        if (yaw > -50) & (yaw < 50):
-            self.wantedyaw = yaw
+
+    def setroll(self, roll):
+        if (roll > -50) & (roll < 50):
+            self.wantedroll = roll
 
     def setpitch(self, pitch):
-        if (pitch > -20) & (pitch < 20):
-            self.wantedyaw = pitch
+        if (pitch > -50) & (pitch < 50):
+            self.wantedpitch = pitch
 
     def setthrottle(self, throttle):
         if throttle == 0:
@@ -90,12 +89,11 @@ class Quadcopter():
                 self.throttle = throttle
 
     def getdata(self):
-        gx, gy, ax, ay, x, y = self.mpu6050.getextendedvalues()
-        return gx, gy, ax, ay, x, y, self.motor1.getpercent(), self.motor2.getpercent(), self.motor3.getpercent(), self.motor4.getpercent()
+        gx, gy, ax, ay, x, y, z = self.mpu6050.getextendedvalues()
+        return gx, gy, ax, ay, x, y, z, self.motor1.getpercent(), self.motor2.getpercent(), self.motor3.getpercent(), self.motor4.getpercent()
 
     def stop(self):
         self.running = False
-        self.userinput.stop()
         self.mpu6050.stop()
         time.sleep(1)
         self.motor1.stop()

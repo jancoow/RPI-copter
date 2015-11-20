@@ -30,8 +30,8 @@ class Ui_Frame(QtGui.QWidget):
         self.setupUi(self)
         self.networkhandler = udpsocket(self)
         self.networkhandler.start()
-        self.connect(self.networkhandler, QtCore.SIGNAL("newdata(QString, QString, QString, QString, QString, QString, QString, QString, QString, QString)"), self.newdata)
-        self.throttle = self.pitch = self.yaw = 0
+        self.connect(self.networkhandler, QtCore.SIGNAL("newdata(QString, QString, QString, QString, QString, QString, QString, QString, QString, QString, QString)"), self.newdata)
+        self.throttle = self.pitch = self.roll = 0
 
     def setupUi(self, Frame):
         Frame.setObjectName(_fromUtf8("Frame"))
@@ -93,7 +93,8 @@ class Ui_Frame(QtGui.QWidget):
         #control view
         self.controlsview = controlsview(self.widget)
         QtCore.QObject.connect(self.controlsview.throttleSlider, QtCore.SIGNAL('valueChanged(int)'), self.setthrottle)
-        QtCore.QObject.connect(self.controlsview.yawSlider, QtCore.SIGNAL('valueChanged(int)'), self.setyaw)
+        QtCore.QObject.connect(self.controlsview.rollSlider, QtCore.SIGNAL('valueChanged(int)'), self.setroll)
+        QtCore.QObject.connect(self.controlsview.pitchSlider, QtCore.SIGNAL('valueChanged(int)'), self.setpitch)
         QtCore.QObject.connect(self.controlsview.submitbutton, QtCore.SIGNAL('clicked()'), self.sendpid)
 
         #mp3050graph
@@ -108,29 +109,33 @@ class Ui_Frame(QtGui.QWidget):
         QtCore.QMetaObject.connectSlotsByName(Frame)
         Frame.setWindowTitle(_translate("Frame", "Quadcopter GUI", None))
 
-    def setyaw(self,yaw):
-        self.yaw = yaw
+    def setroll(self,roll):
+        self.roll = roll
+        self.controlsview.rollSlider.setValue(roll)
         self.controlsview.repaint()
         self.sendcontrol()
 
     def setpitch(self, pitch):
         self.pitch = pitch
+        self.controlsview.pitchSlider.setValue(pitch)
+        self.controlsview.repaint()
         self.sendcontrol()
 
     def setthrottle(self, throttle):
         self.throttle = throttle
+        self.controlsview.throttleSlider.setValue(throttle)
         self.controlsview.repaint()
         self.sendcontrol()
 
     def sendcontrol(self):
-        self.networkhandler.sendcontrol(self.throttle, self.yaw, self.pitch)
+        self.networkhandler.sendcontrol(self.throttle, self.roll, self.pitch)
 
     def sendpid(self):
         self.networkhandler.sendpid(self.controlsview.pedit.text(), self.controlsview.iedit.text(), self.controlsview.dedit.text())
 
-    def newdata(self, gyrx, gyry, accx, accy, filterx, filtery, m1, m2, m3, m4):
+    def newdata(self, gyrx, gyry, accx, accy, filterx, filtery,z, m1, m2, m3, m4):
         self.quadcopter3dview.setCordinats(filterx,filtery)
-        self.quadcopter2dview.setCordinats(filterx,filtery, m1, m2, m3, m4)
+        self.quadcopter2dview.setCordinats(filterx,filtery,z, m1, m2, m3, m4)
         self.mp3050graph.adddata(gyrx,gyry,accx,accy,filterx,filtery)
 
 if __name__ == '__main__':

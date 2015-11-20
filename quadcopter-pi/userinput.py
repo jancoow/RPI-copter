@@ -15,7 +15,7 @@ class UserInput(threading.Thread):
                 if uinput == "exit":
                     self.q.stop()
                 else:
-                    self.q.setyaw(int(uinput))
+                    self.q.setroll(int(uinput))
             except ValueError:
                 print "geen nummer"
 
