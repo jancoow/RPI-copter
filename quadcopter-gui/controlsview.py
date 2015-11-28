@@ -57,6 +57,6 @@ class controlsview(QWidget):
         color.setNamedColor('#FFA500')
         qp.setPen(color)
         qp.drawText(QtCore.QRect(40, 120, 80, 20), QtCore.Qt.AlignCenter, "Throttle "+str(self.throttleSlider.value()) + "%")
-        qp.drawText(QtCore.QRect(170, 120, 80, 20), QtCore.Qt.AlignCenter, "Roll " + str(self.rollSlider.value()) + "º")
-        qp.drawText(QtCore.QRect(300, 120, 80, 20), QtCore.Qt.AlignCenter, "Pitch "+str(self.pitchSlider.value()) + "º")
+        qp.drawText(QtCore.QRect(170, 120, 80, 20), QtCore.Qt.AlignCenter, "Roll " + str(self.rollSlider.value()) + "o")
+        qp.drawText(QtCore.QRect(300, 120, 80, 20), QtCore.Qt.AlignCenter, "Pitch "+str(self.pitchSlider.value()) + "o")
         qp.end()

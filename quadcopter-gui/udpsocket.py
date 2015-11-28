@@ -4,8 +4,9 @@ __author__ = 'janco'
 
 class udpsocket(QtCore.QThread):
     def __init__(self, Ui_Frame):
-        address = ('localhost', 2828)
+        address = ('192.168.1.21', 2828)
         self.server_socket = socket(AF_INET, SOCK_DGRAM)
+        self.server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.server_socket.bind(address)
         self.frame = Ui_Frame
         print("server open op poort 2828")

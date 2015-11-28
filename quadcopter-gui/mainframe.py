@@ -5,7 +5,7 @@ from quadcopter3dview import quadcopter3dview
 from mp3050graph import mp3050graph
 from controlsview import controlsview
 from udpsocket import udpsocket
-
+from ps3controller import ps3controller
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -27,6 +27,10 @@ class Ui_Frame(QtGui.QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), QtGui.QColor(32,32,32))
         self.setPalette(p)
+        #self.wiiremote = wiiremote(self)
+        #self.wiiremote.start()
+        self.ps3controller = ps3controller(self)
+        self.ps3controller.start()
         self.setupUi(self)
         self.networkhandler = udpsocket(self)
         self.networkhandler.start()
@@ -97,6 +101,16 @@ class Ui_Frame(QtGui.QWidget):
         QtCore.QObject.connect(self.controlsview.pitchSlider, QtCore.SIGNAL('valueChanged(int)'), self.setpitch)
         QtCore.QObject.connect(self.controlsview.submitbutton, QtCore.SIGNAL('clicked()'), self.sendpid)
 
+        #wiiremote
+        #QtCore.QObject.connect(self.wiiremote, QtCore.SIGNAL('throttle(int)'), self.setthrottle)
+        #QtCore.QObject.connect(self.wiiremote, QtCore.SIGNAL('pitch(int)'), self.setpitch)
+        #QtCore.QObject.connect(self.wiiremote, QtCore.SIGNAL('roll(int)'), self.setroll)
+
+        #ps3controller
+        QtCore.QObject.connect(self.ps3controller, QtCore.SIGNAL('throttle(int)'), self.setthrottle)
+        QtCore.QObject.connect(self.ps3controller, QtCore.SIGNAL('pitch(int)'), self.setpitch)
+        QtCore.QObject.connect(self.ps3controller, QtCore.SIGNAL('roll(int)'), self.setroll)
+
         #mp3050graph
         self.mp3050graph = mp3050graph(self.widget)
 
@@ -126,6 +140,9 @@ class Ui_Frame(QtGui.QWidget):
         self.controlsview.throttleSlider.setValue(throttle)
         self.controlsview.repaint()
         self.sendcontrol()
+
+    def getthrottle(self):
+        return int(self.controlsview.throttleSlider.value())
 
     def sendcontrol(self):
         self.networkhandler.sendcontrol(self.throttle, self.roll, self.pitch)
