@@ -13,6 +13,7 @@ class ps3controller(QtCore.QThread):
 
     def run(self):
         pygame.init()
+        pygame.event.set_blocked(pygame.MOUSEMOTION)
         pygame.joystick.init()
         print pygame.joystick.get_count()
 

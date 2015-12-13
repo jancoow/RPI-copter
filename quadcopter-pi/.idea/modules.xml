@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../quadcopter-gui/.idea/Quadcopter-GUI.iml" filepath="$PROJECT_DIR$/../quadcopter-gui/.idea/Quadcopter-GUI.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/quadcopter.iml" filepath="$PROJECT_DIR$/.idea/quadcopter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../yjmpd/yjdaemon/.idea/yjdaemon.iml" filepath="$PROJECT_DIR$/../../yjmpd/yjdaemon/.idea/yjdaemon.iml" />
     </modules>
   </component>
 </project>
