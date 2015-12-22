@@ -32,29 +32,26 @@ class MPU6050(threading.Thread):
         self.running = True
         threading.Thread.__init__(self)
 
-    def run(self):
-        time_diff = 0.01
-        while self.running:
-            time.sleep(time_diff - 0.005)
-            (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.__read_all()
+    def read(self):
+        (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = self.__read_all()
 
-            gyro_scaled_x -= self.gyro_offset_x
-            gyro_scaled_y -= self.gyro_offset_y
-            gyro_scaled_z -= self.gyro_offset_z
+        gyro_scaled_x -= self.gyro_offset_x
+        gyro_scaled_y -= self.gyro_offset_y
+        gyro_scaled_z -= self.gyro_offset_z
 
-            gyro_x_delta = (gyro_scaled_x * time_diff)
-            gyro_y_delta = (gyro_scaled_y * time_diff)
-            gyro_z_delta = (gyro_scaled_z * time_diff)
+        gyro_x_delta = (gyro_scaled_x * 0.01)
+        gyro_y_delta = (gyro_scaled_y * 0.01)
+        gyro_z_delta = (gyro_scaled_z * 0.01)
 
-            self.gyro_total_x += gyro_x_delta
-            self.gyro_total_y += gyro_y_delta
-            self.gyro_total_z += gyro_z_delta
+        self.gyro_total_x += gyro_x_delta
+        self.gyro_total_y += gyro_y_delta
+        self.gyro_total_z += gyro_z_delta
 
-            rotation_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-            rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        rotation_x = self.get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+        rotation_y = self.get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
 
-            self.last_x = 0.98 * (self.last_x + gyro_x_delta) + (0.02 * rotation_x)
-            self.last_y = 0.98 * (self.last_y + gyro_y_delta) + (0.02 * rotation_y)
+        self.last_x = 0.98 * (self.last_x + gyro_x_delta) + (0.02 * rotation_x)
+        self.last_y = 0.98 * (self.last_y + gyro_y_delta) + (0.02 * rotation_y)
 
     def __read_all(self):
         raw_gyro_data = self.bus.read_i2c_block_data(self.address, 0x43, 6)
@@ -70,7 +67,7 @@ class MPU6050(threading.Thread):
 
         return self.gyro_scaled_x, self.gyro_scaled_y, self.gyro_scaled_z, self.accel_scaled_x, self.accel_scaled_y, self.accel_scaled_z
 
-    def twos_compliment(self,val):
+    def twos_compliment(self, val):
         if val >= 0x8000:
             return -((65535 - val) + 1)
         else:
@@ -91,7 +88,7 @@ class MPU6050(threading.Thread):
         return self.last_x, self.last_y, self.gyro_total_z
 
     def getextendedvalues(self):
-        return int(self.gyro_scaled_x), int(self.gyro_scaled_y), int(self.accel_scaled_x*10), int(self.accel_scaled_y*10), int(self.last_x), int(self.last_y), int(self.gyro_total_z)
+        return int(self.gyro_scaled_x), int(self.gyro_scaled_y), int(self.accel_scaled_x*10), int(self.accel_scaled_y*10), round(self.last_x,2), round(self.last_y,2), int(self.gyro_total_z)
 
     def stop(self):
         self.running = False

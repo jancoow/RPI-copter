@@ -1,4 +1,3 @@
-import math
 import time
 __author__ = 'janco'
 
@@ -32,7 +31,7 @@ class PwmBoard:
         self.address = address
         self.write8(self.__MODE2, self.__OUTDRV)
         self.write8(self.__MODE1, self.__ALLCALL)
-        time.sleep(0.005)                                       # wait for oscillator
+        time.sleep(0.005)
 
         mode1 = self.readU8(self.__MODE1)
         mode1 = mode1 & ~self.__SLEEP                           # wake up (reset sleep)
@@ -40,14 +39,13 @@ class PwmBoard:
         time.sleep(0.005)                                       # wait for oscillator
 
     def setPWM(self, channel, on, off):
-        "Sets a single PWM channel"
         self.write8(self.__LED0_ON_L+4*channel, on & 0xFF)
         self.write8(self.__LED0_ON_H+4*channel, on >> 8)
         self.write8(self.__LED0_OFF_L+4*channel, off & 0xFF)
         self.write8(self.__LED0_OFF_H+4*channel, off >> 8)
 
     def write8(self,reg,value):
-        self.bus.write_byte_data(self.address,reg,value)
+        self.bus.write_byte_data(self.address, reg, value)
 
     def readU8(self,reg):
-        return self.bus.read_byte_data(self.address,reg)
+        return self.bus.read_byte_data(self.address, reg)

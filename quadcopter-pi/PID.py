@@ -53,4 +53,4 @@ class PID:
         #-------------------------------------------------------------------------------------------
         # Return the output, which has been tuned to be the increment / decrement in ESC PWM
         #-------------------------------------------------------------------------------------------
-        return (p_output + i_output + d_output)
+        return p_output + i_output + d_output

@@ -1,5 +1,4 @@
 import smbus
-from userinput import UserInput
 from networkhandler import NetworkHandler
 import sys
 from MPU6050 import MPU6050
@@ -14,25 +13,22 @@ class Quadcopter():
 
     def __init__(self):
         self.bus = smbus.SMBus(1)
-        self.pwm = PwmBoard(self.bus,0x40)
-        self.motor1 = Motor(self.pwm,0)
-        self.motor2 = Motor(self.pwm,1)
-        self.motor3 = Motor(self.pwm,2)
-        self.motor4 = Motor(self.pwm,3)
+        self.pwm = PwmBoard(self.bus, 0x40)
+        self.motor1 = Motor(self.pwm, 0)
+        self.motor2 = Motor(self.pwm, 1)
+        self.motor3 = Motor(self.pwm, 2)
+        self.motor4 = Motor(self.pwm, 3)
 
-        self.mpu6050 = MPU6050(self.bus,0x68)
+        self.mpu6050 = MPU6050(self.bus, 0x68)
         self.mpu6050.start()
-
-        #self.userinput = UserInput(self)
-        #self.userinput.start()
 
         self.networkhandler = NetworkHandler(self)
 
         self.running = True
 
-        self.pgain = 3.0
-        self.igain = 0.0
-        self.dgain = 1.2
+        self.pgain = 5.0
+        self.igain = 0.01
+        self.dgain = 1.5
 
         self.roll_pid = PID(self.pgain, self.igain, self.dgain)
         self.pitch_pid = PID(self.pgain, self.igain, self.dgain)
@@ -40,13 +36,16 @@ class Quadcopter():
 
         self.wantedroll = 0.0
         self.wantedpitch = 0.0
-        self.throttle = 0.0;
+        self.throttle = 0.0
 
         time.sleep(1)
 
     def start(self):
         lasttime = time.time()
+        time_diff = 0.01
         while self.running:
+            self.mpu6050.read()
+            time.sleep(time_diff - 0.005)
             x, y, z = self.mpu6050.getlastvalues()
             delta_time = time.time() - lasttime
             lasttime = time.time()
@@ -65,7 +64,6 @@ class Quadcopter():
     def changepidgain(self, pgain, igain, dgain):
         self.roll_pid.changegain(pgain, igain, dgain)
         self.pitch_pid.changegain(pgain, igain, dgain)
-
 
     def setroll(self, roll):
         if (roll > -50) & (roll < 50):

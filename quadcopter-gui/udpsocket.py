@@ -4,7 +4,7 @@ __author__ = 'janco'
 
 class udpsocket(QtCore.QThread):
     def __init__(self, Ui_Frame):
-        address = ('localhost', 2828)
+        address = ('192.168.1.11', 2828)
         self.server_socket = socket(AF_INET, SOCK_DGRAM)
         self.server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.server_socket.bind(address)
@@ -14,7 +14,7 @@ class udpsocket(QtCore.QThread):
 
     def run(self):
         while(True):
-            recv_data, addr = self.server_socket.recvfrom(35)
+            recv_data, addr = self.server_socket.recvfrom(40)
             recv_data = recv_data.rstrip()
             data = recv_data.decode().split("|")
             print (data)
