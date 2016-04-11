@@ -38,4 +38,3 @@ class quadcopter2dview(QWidget):
         self.motor2 = m2
         self.motor3 = m3
         self.motor4 = m4
-        self.repaint()

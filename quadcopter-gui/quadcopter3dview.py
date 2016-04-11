@@ -84,7 +84,6 @@ class quadcopter3dview(QGLWidget):
     def setCordinats(self,x,y):
         self.x_angle = x
         self.y_angle = y
-        self.repaint()
 
 class Cube(object):
     num_faces = 6

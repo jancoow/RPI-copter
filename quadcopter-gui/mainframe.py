@@ -1,5 +1,6 @@
 import sys
 from PyQt4 import QtCore, QtGui, Qt
+from PyQt4.QtCore import QTimer
 from quadcopter2dview import quadcopter2dview
 from quadcopter3dview import quadcopter3dview
 from mp3050graph import mp3050graph
@@ -36,6 +37,9 @@ class Ui_Frame(QtGui.QWidget):
         self.networkhandler.start()
         self.connect(self.networkhandler, QtCore.SIGNAL("newdata(QString, QString, QString, QString, QString, QString, QString, QString, QString, QString, QString)"), self.newdata)
         self.throttle = self.pitch = self.roll = 0
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.tick)
+        self.timer.start(1000/20) #20 times per second repaint
 
     def setupUi(self, Frame):
         Frame.setObjectName(_fromUtf8("Frame"))
@@ -123,22 +127,23 @@ class Ui_Frame(QtGui.QWidget):
         QtCore.QMetaObject.connectSlotsByName(Frame)
         Frame.setWindowTitle(_translate("Frame", "Quadcopter GUI", None))
 
+    def tick(self):
+        self.quadcopter3dview.repaint()
+        self.repaint()
+
     def setroll(self,roll):
         self.roll = roll
         self.controlsview.rollSlider.setValue(roll)
-        self.controlsview.repaint()
         self.sendcontrol()
 
     def setpitch(self, pitch):
         self.pitch = pitch
         self.controlsview.pitchSlider.setValue(pitch)
-        self.controlsview.repaint()
         self.sendcontrol()
 
     def setthrottle(self, throttle):
         self.throttle = throttle
         self.controlsview.throttleSlider.setValue(throttle)
-        self.controlsview.repaint()
         self.sendcontrol()
 
     def getthrottle(self):
